@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
-import { FunctionalDependency, FunctionalDependencySet, RelationalScheme, Utils } from 'relational-schema-normalization';
+import { FunctionalDependency, FunctionalDependencySet, RelationalSchema, Utils } from 'relational-schema-normalization';
 
 const parseAttributes = (schema: string) => {
   const regex = /^[a-zA-Z_][a-zA-Z0-9_]*(,\s*[a-zA-Z_][a-zA-Z0-9_]*)*$/;
@@ -107,8 +107,8 @@ const FunctionalDependenciesApp: React.FC = () => {
     setDependencies(newDependencies);
   };
 
-  const loadRelationalSchemeAndFunctionalDependencies = (): [RelationalScheme, FunctionalDependencySet] => {
-    return [new RelationalScheme(attributes), new FunctionalDependencySet(
+  const loadRelationalSchemaAndFunctionalDependencies = (): [RelationalSchema, FunctionalDependencySet] => {
+    return [new RelationalSchema(attributes), new FunctionalDependencySet(
       dependencies.map(dependency => new FunctionalDependency(new Set<string>(dependency.from), new Set<string>(dependency.to)))
     )]
   }
@@ -125,10 +125,10 @@ const FunctionalDependenciesApp: React.FC = () => {
 
   const handleButton1Click = () => { // candidate keys
     setLoading(true);
-    const [relationalScheme, fds]: [RelationalScheme, FunctionalDependencySet] = loadRelationalSchemeAndFunctionalDependencies();
+    const [relationalSchema, fds]: [RelationalSchema, FunctionalDependencySet] = loadRelationalSchemaAndFunctionalDependencies();
     setTimeout(() =>{
 
-      const candidateKeys = Utils.computeCandidateKeys(relationalScheme, fds);
+      const candidateKeys = Utils.computeCandidateKeys(relationalSchema, fds);
       
       let resultText = '';
       
@@ -141,9 +141,9 @@ const FunctionalDependenciesApp: React.FC = () => {
 
   const handleButton2Click = () => { // attributes closure
     setLoading(true);
-    const [relationalScheme, fds]: [RelationalScheme, FunctionalDependencySet] = loadRelationalSchemeAndFunctionalDependencies();
+    const [relationalSchema, fds]: [RelationalSchema, FunctionalDependencySet] = loadRelationalSchemaAndFunctionalDependencies();
     setTimeout(() => {
-      const subsets: Set<string>[] = Utils.generateSubsets(relationalScheme.attributes);
+      const subsets: Set<string>[] = Utils.generateSubsets(relationalSchema.attributes);
       
       let resultText = '';
       
@@ -156,11 +156,11 @@ const FunctionalDependenciesApp: React.FC = () => {
 
   const handleButton3Click = () => { // functional dependencies closure
     setLoading(true);
-    const [relationalScheme, fds]: [RelationalScheme, FunctionalDependencySet] = loadRelationalSchemeAndFunctionalDependencies();
+    const [relationalSchema, fds]: [RelationalSchema, FunctionalDependencySet] = loadRelationalSchemaAndFunctionalDependencies();
     setTimeout(() => {
       let resultText = '';
       
-      const fdsClosure = Utils.closureOfSetOfFunctionalDependenciesUsingAttributesClosure(relationalScheme, fds);
+      const fdsClosure = Utils.closureOfSetOfFunctionalDependenciesUsingAttributesClosure(relationalSchema, fds);
       
       fdsClosure.fdArray.forEach(fd => resultText += `\u2022${setOfAttributesToString(fd.determinant)} \u2192 ${setOfAttributesToString(fd.dependent)}\n`)
       
@@ -171,7 +171,7 @@ const FunctionalDependenciesApp: React.FC = () => {
 
   const handleButton4Click = () => { // minimal cover
     setLoading(true);
-    const [relationalScheme, fds]: [RelationalScheme, FunctionalDependencySet] = loadRelationalSchemeAndFunctionalDependencies();
+    const [relationalSchema, fds]: [RelationalSchema, FunctionalDependencySet] = loadRelationalSchemaAndFunctionalDependencies();
     setTimeout(() => {
       let resultText = '';
       
@@ -186,12 +186,12 @@ const FunctionalDependenciesApp: React.FC = () => {
 
   const handleButton5Click = () => { // 3NF
     setLoading(true);
-    const [relationalScheme, fds]: [RelationalScheme, FunctionalDependencySet] = loadRelationalSchemeAndFunctionalDependencies();
+    const [relationalSchema, fds]: [RelationalSchema, FunctionalDependencySet] = loadRelationalSchemaAndFunctionalDependencies();
     setTimeout(() => {
 
       let resultText = '';
       
-      const rs3nf: RelationalScheme[] = Utils.syntesisAlgorithmFor3NF(relationalScheme, fds);
+      const rs3nf: RelationalSchema[] = Utils.syntesisAlgorithmFor3NF(relationalSchema, fds);
       
       rs3nf.forEach(rs => resultText += `\u2022${setOfAttributesToString(rs.attributes)}\n`)
       
@@ -202,13 +202,13 @@ const FunctionalDependenciesApp: React.FC = () => {
 
   const handleButton6Click = async () => { // BCNF
     setLoading(true);
-    const [relationalScheme, fds]: [RelationalScheme, FunctionalDependencySet] = loadRelationalSchemeAndFunctionalDependencies();
+    const [relationalSchema, fds]: [RelationalSchema, FunctionalDependencySet] = loadRelationalSchemaAndFunctionalDependencies();
 
     setTimeout(() => {
 
       let resultText = '';
       
-      const rs3nf: RelationalScheme[] = Utils.bcnfDecomposition(relationalScheme, fds);
+      const rs3nf: RelationalSchema[] = Utils.bcnfDecomposition(relationalSchema, fds);
       
       rs3nf.forEach(rs => resultText += `\u2022${setOfAttributesToString(rs.attributes)}\n`)
       
